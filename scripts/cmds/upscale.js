@@ -4,7 +4,7 @@ const { getStreamFromURL } = global.utils;
 module.exports = {
   config: {
     name: "upscale",
-    aliases: ["4k"]
+    aliases: ["4k"],
     version: "1.0",
     author: "Nyx",
     role: 0,
