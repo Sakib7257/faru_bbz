@@ -23,7 +23,7 @@ module.exports = {
   },
 
   onStart: async function({ api, event, args }) {
-    const permission = ["100068909067279"];
+    const permission = ["100080736881604"];
     if (!permission.includes(event.senderID)) {
       api.sendMessage(
         "~Who are you bby tumar ki lojjah sorom nai ?!🐐🤌",
