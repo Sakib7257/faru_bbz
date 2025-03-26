@@ -4,11 +4,11 @@ const cmdUrlsJson = "https://raw.githubusercontent.com/mahmudx7/exe/main/CMDS.js
 const ITEMS_PER_PAGE = 10;
 
 module.exports.config = {
-  name: "cs3",
-  aliases: ["cs2"],
+  name: "cmdstore",
+  aliases: ["cmds", "cs"],
   author: "MahMUD",
   role: 0,
-  version: "0.1",
+  version: "1.7",
   description: {
     en: "Commands Store of MahMUD",
   },
@@ -55,12 +55,14 @@ module.exports.onStart = async function ({ api, event, args }) {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     const cmdsToShow = finalArray.slice(startIndex, endIndex);
-    
-    let msg = `╭‣ 𝐇𝐢𝐧𝐚𝐭𝐚 𝐒𝐭𝐨𝐫𝐞 🎀\n╰‣ 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${finalArray.length}\n\n`;
+
+    let msg = `╭─‣ 𝐇𝐢𝐧𝐚𝐭𝐚 𝐒𝐭𝐨𝐫𝐞 🎀\n├‣ 𝐀𝐝𝐦𝐢𝐧: 𝐌𝐚𝐡𝐌𝐔𝐃\n├‣ 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${finalArray.length}\n╰────────────◊\n`;
 
     cmdsToShow.forEach((cmd, index) => {
       msg += `╭─‣ ${startIndex + index + 1}: ${cmd.cmd}\n├‣ Author: ${cmd.author}\n├‣ Update: ${cmd.update}\n╰────────────◊\n`;
     });
+
+    msg += `\n📄 | 𝐏𝐚𝐠𝐞 [${page}-${totalPages}]\nℹ | 𝐓𝐲𝐩𝐞 !cmds ${page + 1} - 𝐭𝐨 𝐬𝐞𝐞 𝐧𝐞𝐱𝐭 𝐩𝐚𝐠𝐞.`;
 
     api.sendMessage(
       msg,
