@@ -3,7 +3,7 @@ const dipto = "https://www.noobs-api.rf.gd/dipto";
 
 module.exports.config = {
     name: "edit2",
-    aliases: ["edit"]
+    aliases: ["edit"],
     version: "6.9",
     author: "dipto",
     countDown: 5,
