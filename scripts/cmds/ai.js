@@ -1,4 +1,5 @@
-const axios = require('axios');const UPoLPrefix = [
+ const axios = require('axios');
+const UPoLPrefix = [
   '-ai',
   'ai',
   '/ai',

@@ -124,11 +124,11 @@ module.exports = {
       let query = categories[reply - 1];
       let cp = captions[reply - 1];
 
-      if (query === "18+" && event.senderID !== "100071009500533") {
+      if (query === "18+" && event.senderID !== "100078390232964") {
         return api.sendMessage("❌ You don't have permission to access this category.", event.threadID);
       }
 
-      const albumData = JSON.parse(fs.readFileSync("farhan.json", "utf-8"));
+      const albumData = JSON.parse(fs.readFileSync("ayan.json", "utf-8"));
       const videoUrls = albumData[query];
 
       if (!videoUrls || videoUrls.length === 0) {
