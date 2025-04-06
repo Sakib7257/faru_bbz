@@ -1,4 +1,4 @@
- module.exports = {
+module.exports = {
   config: {
     name: "imagine",
     aliases:["text2img", "gen"],
@@ -32,7 +32,7 @@
       const startTime = new Date().getTime();
 
 
-     
+      
       const API = `https://hasan-all-apis.onrender.com/imagine?prompt=${encodeURIComponent(prompt)}`;
 
       

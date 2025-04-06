@@ -15,11 +15,15 @@ module.exports = {
 	config: {
 		name: "emojimean",
 		alias: ["em", "emojimeaning", "emojimean"],
-		version: "1.4",
+		version: "1.3",
 		author: "NTKhang",
 		countDown: 5,
 		role: 0,
-		description: {
+		shortDescription: {
+			vi: "Tìm nghĩa của emoji",
+			en: "Find the meaning of emoji"
+		},
+		longDescription: {
 			vi: "Tìm nghĩa của emoji",
 			en: "Find the meaning of emoji"
 		},

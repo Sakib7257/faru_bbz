@@ -1,46 +1,63 @@
-const axios = require("axios");
+const axios = require('axios');
+const { getStreamFromURL } = global.utils;
 
-module.exports.config = {
-  name: "flux",
-  version: "2.0",
-  role: 0,
-  author: "Dipto",
-  description: "Flux Image Generator",
-  category: "𝗜𝗠𝗔𝗚𝗘 𝗚𝗘𝗡𝗘𝗥𝗔𝗧𝗢𝗥",
-  premium: true,
-  guide: "{pn} [prompt] --ratio 1024x1024\n{pn} [prompt]",
-  countDown: 15,
-};
+module.exports = {
+  config: {
+    name: "flux",
+    version: "1.1",
+    author: "Redwan",
+    countDown: 0,
+    longDescription: {
+      en: "Create AI-generated images with your prompt."
+    },
+    category: "image",
+    role: 0,
+    guide: {
+      en: "{pn} <prompt>"
+    }
+  },
 
-module.exports.onStart = async ({ event, args, api }) => {
-  const dipto = "https://www.noobs-api.rf.gd/dipto";
+  onStart: async function ({ api, event, args, message }) {
+    if (!this.checkAuthor()) {
+      return message.reply("Unauthorized action.");
+    }
 
-  try {
-    const prompt = args.join(" ");
-    const [prompt2, ratio = "1:1"] = prompt.includes("--ratio")
-      ? prompt.split("--ratio").map(s => s.trim())
-      : [prompt, "1:1"];
+    const prompt = args.join(' ').trim();
+    if (!prompt) {
+      return message.reply("Enter a prompt to generate an image.");
+    }
 
-    const startTime = Date.now();
-    
-    const waitMessage = await api.sendMessage("Generating image, please wait... 😘", event.threadID);
-    api.setMessageReaction("⌛", event.messageID, () => {}, true);
+    message.reply("𝐏𝐥𝐳 𝐰𝐚𝐢𝐭 𝐛𝐛𝐲 🎀🐥.", async (err, info) => {
+      if (err) return console.error(err);
 
-    const apiurl = `${dipto}/flux?prompt=${encodeURIComponent(prompt2)}&ratio=${encodeURIComponent(ratio)}`;
-    const response = await axios.get(apiurl, { responseType: "stream" });
+      try {
+        const apiUrl = `https://global-redwans-apis.onrender.com/api/fluxxx?p=${encodeURIComponent(prompt)}&mode=flux`;
+        const response = await axios.get(apiUrl);
+        const { html } = response.data.data;
 
-    const timeTaken = ((Date.now() - startTime) / 1000).toFixed(2);
+        const imageUrls = [...html.matchAll(/<a href="(https:\/\/aicdn\.picsart\.com\/[a-zA-Z0-9-]+\.jpg)"/g)].map(match => match[1]);
 
-    api.setMessageReaction("✅", event.messageID, () => {}, true);
-    api.unsendMessage(waitMessage.messageID);
+        if (!imageUrls || imageUrls.length < 2) {
+          return message.reply("Image generation failed. Try again.");
+        }
 
-    api.sendMessage({
-      body: `Here's your image (Generated in ${timeTaken} seconds)`,
-      attachment: response.data,
-    }, event.threadID, event.messageID);
-    
-  } catch (e) {
-    console.error(e);
-    api.sendMessage("Error: " + e.message, event.threadID, event.messageID);
+        const imageStreams = await Promise.all(
+          imageUrls.slice(0, 2).map((url, index) => getStreamFromURL(url, `flux_image_${index + 1}.png`))
+        );
+
+        message.reply({
+          body: "Here are your images!",
+          attachment: imageStreams,
+        });
+
+      } catch (error) {
+        console.error(error);
+        message.reply("Something went wrong. Try again later.");
+      }
+    });
+  },
+
+  checkAuthor: function () {
+    return this.config.author === "Redwan";
   }
 };

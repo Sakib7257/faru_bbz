@@ -1,7 +1,7 @@
 const axios = require("axios");
 const baseApiUrl = async () => {
     const base = await axios.get(
-        `https://raw.githubusercontent.com/Mostakim0978/D1PT0/refs/heads/main/baseApiUrl.json`,
+        `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`,
     );
     return base.data.api;
 };
@@ -37,12 +37,10 @@ module.exports = {
     onStart: async function ({ api, args, event, message }) {
         try {
             let tid;
-            let color = "white"; //text color
-            let bgColor;
+            let color = "red";
+            let bgColor = "https://telegra.ph/file/404fd6686c995d8db9ebf.jpg";
             let adminColor = "yellow";
-            let memberColor = "cyan";
-            let groupborderColor = "lime";
-            let glow = false;
+            let memberColor = "";
 
             for (let i = 0; i < args.length; i++) {
                 switch (args[i]) {
@@ -62,14 +60,6 @@ module.exports = {
                         memberColor = args[i + 1];
                         args.splice(i, 2);
                         break;
-                    case "--groupBorder":
-                    groupborderColor = args[i + 1];
-                    args.splice(i,2);
-                        break;
-                        case "--glow":
-                    glow = args[i + 1];
-                    args.splice(i,2);
-                        break;
                 }
             }
 
@@ -88,8 +78,6 @@ module.exports = {
                 admincolor: adminColor,
                 membercolor: memberColor,
                 color: color,
-                groupborderColor,
-                glow
             };
 
             if (data2) {
@@ -102,12 +90,11 @@ module.exports = {
                 );
             }
             const { data } = await axios.post(
-                `${await baseApiUrl()}/gcimg`,
+                `${await baseApiUrl()}/groupPhoto`,
                 data2,
-                { responseType: "stream" }
             );
 
-            
+            if (data.img) {
                 api.setMessageReaction(
                     "✅",
                     event.messageID,
@@ -116,9 +103,9 @@ module.exports = {
                 message.unsend(waitingMsg.messageID);
                 message.reply({
                     body: `𝙷𝚎𝚛𝚎 𝚒𝚜 𝚢𝚘𝚞𝚛 𝚐𝚛𝚘𝚞𝚙 𝚒𝚖𝚊𝚐𝚎 <😘`,
-                    attachment: data,
+                    attachment: await global.utils.getStreamFromURL(data.img),
                 });
-            
+            }
         } catch (error) {
             console.log(error);
             message.reply(`❌ | 𝙴𝚛𝚛𝚘𝚛: ${error.message}`);

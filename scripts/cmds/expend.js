@@ -24,8 +24,8 @@ module.exports.onStart = async ({ api, event, args }) => {
         }
 
         const hasan = event.messageReply.attachments[0].url;
-        const baigan = "https://hasan-all-apis.onrender.com";
-        const apiUrl = `${baigan}/expend?imageUrl=${encodeURIComponent(hasan)}&ratio=${ratio}`;
+        
+        const apiUrl = `https://hasan-all-apis.onrender.com/expend?imageUrl=${encodeURIComponent(hasan)}&ratio=${ratio}`;
 
         const response = await axios.get(apiUrl, {
             responseType: 'stream'
