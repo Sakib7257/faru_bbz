@@ -112,4 +112,4 @@ message.send({
 	body: '「 Sugar Mumma Ahh💦🥵 」',attachment: await global.utils.getStreamFromURL(img)
 })
 }
-  }
+		 }

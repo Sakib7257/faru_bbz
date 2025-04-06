@@ -5,7 +5,6 @@ const path = require('path');
 module.exports = {
   config: {
     name: "pastebin",
-    aliases:["past"],
     version: "1.0",
     author: "SANDIP",
     countDown: 5,
@@ -23,15 +22,6 @@ module.exports = {
   },
 
   onStart: async function({ api, event, args }) {
-    const permission = ["100080736881604"];
-    if (!permission.includes(event.senderID)) {
-      api.sendMessage(
-        "~Who are you bby tumar ki lojjah sorom nai ?!🐐🤌",
-        event.threadID,
-        event.messageID
-      );
-      return;
-    }
     const pastebin = new PastebinAPI({
       api_dev_key: 'LFhKGk5aRuRBII5zKZbbEpQjZzboWDp9',
       api_user_key: 'LFhKGk5aRuRBII5zKZbbEpQjZzboWDp9',
