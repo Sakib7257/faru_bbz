@@ -1,56 +1,88 @@
+const os = require('os');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
 module.exports = {
-  config: {
-    name: "uptime",
-    aliases: ["up", "rtm"],
-    version: "1.0",
-    author: "BaYjid", // Author is fixed as "BaYjid"
-    role: 0,
-    shortDescription: {
-      en: "Displays the total number of users of the bot and check uptime."
+    config: {
+        name: "uptime",
+        aliases: ["up", "upt"],
+        version: "1.2",
+        author: "VEX_ADNAN",
+        countDown: 5,
+        role: 0,
+        shortDescription: {
+            en: "Shows system uptime and info."
+        },
+        longDescription: {
+            en: "Displays runtime, memory, CPU, and other system details."
+        },
+        category: "SYSTEM",
+        guide: {
+            en: "{pn}"
+        }
     },
-    longDescription: {
-      en: "Displays the total number of users who have interacted with the bot and check uptime."
-    },
-    category: "RUNNING-TIME",
-    guide: {
-      en: "Type {pn}"
-    }
-  },
-  onStart: async function ({ api, event, usersData, threadsData }) {
-    try {
-      const allUsers = await usersData.getAll();
-      const allThreads = await threadsData.getAll();
-      const uptime = process.uptime();
-      const memoryUsage = (process.memoryUsage().rss / 1024 / 1024).toFixed(2);  // Memory usage in MB
-      const cpuLoad = (process.cpuUsage().user / 1000).toFixed(2); // CPU load in milliseconds
 
-      const hours = Math.floor(uptime / 3600);
-      const minutes = Math.floor((uptime % 3600) / 60);
-      const seconds = Math.floor(uptime % 60);
-      
-      const uptimeString = `
-────────────────────
-⏰  𝗛𝗢𝗨𝗥𝗦 : ${hours} 𝗛𝗥
-⌚ 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 : ${minutes} 𝗠𝗜𝗡
-⏳  𝗦𝗘𝗖𝗢𝗡𝗗𝗦 : ${seconds} 𝗦𝗘𝗖
-🧠 𝗠𝗘𝗠𝗢𝗥𝗬 𝗨𝗦𝗔𝗚𝗘 : ${memoryUsage} MB
-💻 𝗖𝗣𝗨 𝗟𝗢𝗔𝗗 : ${cpuLoad} ms
-────────────────────`;
+    onStart: async function ({ message, event, args, api, usersData, threadsData }) {
+        const iURL = "https://i.imgur.com/vJJbdxB.jpeg"; // Fixed photo link
+        const uptime = process.uptime();
+        const s = Math.floor(uptime % 60);
+        const m = Math.floor((uptime / 60) % 60);
+        const h = Math.floor((uptime / (60 * 60)) % 24);
+        const upSt = `${h}H ${m}M ${s}S`;
 
-      api.sendMessage(`
-★─────────────────────────★
-➤ 𝐔𝐏𝐓𝐈𝐌𝐄 ✅
-╭‣ 𝐀𝐝𝐦𝐢𝐧 👑
-╰‣ 𝐅𝐚𝐫𝐡𝐚𝐧 くめ
-★─────────────────────────★
-${uptimeString}
-👥 𝐓𝐨𝐭𝐚𝐥 𝗨𝘀𝗲𝗿𝘀 : ${allUsers.length}
-🗂️ 𝐓𝐨𝐭𝐚𝐥 𝗧𝗵𝗿𝗲𝗮𝗱𝘀 : ${allThreads.length}
-★─────────────────────────★
-`, event.threadID);
-    } catch (error) {
-      console.error(error);
-      api.sendMessage("❌ **Error**: Something went wrong while fetching the data.", event.threadID);
+        let threadInfo = await api.getThreadInfo(event.threadID);
+        const males = threadInfo.userInfo.filter(user => user.gender === "MALE").length;
+        const females = threadInfo.userInfo.filter(user => user.gender === "FEMALE").length;
+        const users = await usersData.getAll();
+        const threads = await threadsData.getAll();
+
+        const totalMemory = os.totalmem();
+        const freeMemory = os.freemem();
+        const usedMemory = totalMemory - freeMemory;
+        const system = `${os.platform()} ${os.release()}`;
+        const model = `${os.cpus()[0].model}`;
+        const cores = os.cpus().length;
+        const processMemory = prettyBytes(process.memoryUsage().rss);
+
+        const stylishMessage = `
+🔥 𝙎𝙮𝙨𝙩𝙚𝙢 𝙎𝙩𝙖𝙩𝙪𝙨 𝙍𝙚𝙥𝙤𝙧𝙩 🔥
+
+⏳ 𝗨𝗽𝘁𝗶𝗺𝗲: *${upSt}*
+👨 𝗠𝗮𝗹𝗲𝘀: *${males}*  
+👩 𝗙𝗲𝗺𝗮𝗹𝗲𝘀: *${females}*  
+🌍 𝗧𝗼𝘁𝗮𝗹 𝗨𝘀𝗲𝗿𝘀: *${users.length}*  
+🏠 𝗧𝗼𝘁𝗮𝗹 𝗚𝗿𝗼𝘂𝗽𝘀: *${threads.length}*  
+
+💻 𝗢𝗦: *${system}*  
+⚙️ 𝗖𝗣𝗨 𝗠𝗼𝗱𝗲𝗹: *${model}*  
+🔢 𝗖𝗼𝗿𝗲𝘀: *${cores}*  
+
+📂 𝗠𝗲𝗺𝗼𝗿𝘆 𝗨𝘀𝗮𝗴𝗲: *${prettyBytes(usedMemory)} / ${prettyBytes(totalMemory)}*  
+🔋 𝗣𝗿𝗼𝗰𝗲𝘀𝘀 𝗠𝗲𝗺𝗼𝗿𝘆: *${processMemory}*  
+
+🚀 𝙋𝙤𝙬𝙚𝙧𝙚𝙙 𝙗𝙮 
+𝑻𝒂𝒏𝒋𝒊𝒓𝒐_𝒌𝒂𝒎𝒂𝒅𝒐_🐥🌸
+`;
+
+        message.reply({
+            body: stylishMessage,
+            attachment: await global.utils.getStreamFromURL(iURL)
+        }, event.threadID);
     }
-  }
 };
+
+async function getDiskUsage() {
+    const { stdout } = await exec('df -k /');
+    const [_, total, used] = stdout.split('\n')[1].split(/\s+/).filter(Boolean);
+    return { total: parseInt(total) * 1024, used: parseInt(used) * 1024 };
+}
+
+function prettyBytes(bytes) {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let i = 0;
+    while (bytes >= 1024 && i < units.length - 1) {
+        bytes /= 1024;
+        i++;
+    }
+    return `${bytes.toFixed(2)} ${units[i]}`;
+ }
